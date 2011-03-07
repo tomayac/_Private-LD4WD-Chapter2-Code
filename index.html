@@ -1,0 +1,100 @@
+<!-- Heavily influenced by http://jqueryui.com/demos/autocomplete/remote-jsonp.html -->
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+  	<meta charset="utf-8"> 
+  	<title>Linked Data For the Web Developer - Movie Soundtrack Explorer</title> 
+  	<link rel="stylesheet" href="http://jqueryui.com/themes/base/jquery.ui.all.css" />
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script> 
+  	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script> 
+  	<script> 
+    	$(function() {
+    		function log( message ) {
+    			$('<div/>').text(message).append('#log');
+    		}
+
+    		function getRelease(url) {
+  				$.ajax({
+  					url: url,
+  					dataType: 'jsonp',
+  					success: function(data) {
+  					  if (data.result.url) {
+  					    var id = data.result.url;
+  						  log(id);
+
+						  }
+  					}
+  				});    		      		  
+    		}
+    		
+    		function getSoundtrack(url) {
+  				$.ajax({
+  					url: url,
+  					dataType: 'jsonp',
+  					success: function(data) {
+  					  if (data.result.properties['/film/film/soundtrack'].values[0]) {
+  					    var id = data.result.properties['/film/film/soundtrack'].values[0].id;
+  						  log(id);
+  						  getRelease('http://www.freebase.com/experimental/topic/standard' + id);
+						  }
+  					}
+  				});    		      		  
+    		}
+    		
+    		function getSoundtrackUrl(url) {
+  				$.ajax({
+  					url: url,
+  					dataType: 'jsonp',
+  					success: function(data) {
+  					  if (data.result.properties['/film/film/soundtrack'].values[0]) {
+  					    var id = data.result.properties['/film/film/soundtrack'].values[0].id;
+  						  log(id);
+  						  getSoundtrack('http://www.freebase.com/experimental/topic/standard' + id);
+						  }
+  					}
+  				});    		  
+    		}
+ 
+    		$('#movie').autocomplete({
+    			source: function(request, response) {
+    				$.ajax({
+    					url: 'http://freebase.com/api/service/search?',
+    					dataType: 'jsonp',
+    					data: {
+                query: request.term,
+                typ: '/film/film',
+                type_strict: 'all',
+                limit: 3
+    					},
+    					success: function(data) {
+    						response($.map(data.result, function(item) {
+    							return {
+    								label: item.name + ' http://freebase.com' + item.id,
+    								value: 'http://www.freebase.com/experimental/topic/standard' + item.id
+    							}
+    						}));
+    					}
+    				});
+    			},
+    			minLength: 2,
+    			select: function(event, ui) {
+    			  if (ui.item) {
+    			    var url = ui.item.value;
+    			    var name = ui.item.label;
+    				  log(name);
+    				  log(url);
+    				  getSoundtrackUrl(url);
+  				  }
+    			},
+    		});
+    	});
+  	</script> 
+  </head> 
+  <body>  
+    <div class="ui-widget"> 
+    	<label for="movie">Movie title: </label> 
+    	<input id="movie" /> 
+    </div>  
+  	<div id="log"></div>
+  </body> 
+</html>
