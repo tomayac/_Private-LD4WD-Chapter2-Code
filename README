@@ -1,0 +1,17 @@
+Changelog: 
+----------
+
+- Moved initial comment below the Doctype
+- Created separate script "nose.js" file to clear the HTML
+- Moved script to the end of the file -- just before the closing </body> tag
+- Modified the log() function to work and added some styling to it
+
+ToDoS : 
+-------
+
+- Implementation for a simple use case -- the one described in the chapter, i.e: 
+  Fetching from Freebase for a movie entity > Searching for the Soundtrack > requesting MusicBrainz to retrieve the Soundtrack info
+- Explore different nose-following paths...   
+- Find a good & reliable source of information. 
+  It seems it's kind of a unicorn at the moment. Solution: use YQL to aggregate several sources of information?
+  + idea: use the YQL Jquery plugin? ()
