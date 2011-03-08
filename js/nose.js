@@ -13,13 +13,19 @@ $(function() {
 	
 	function displaySoundtrack(tracks,elt){
 		//function to display the soundtracks after the elt passed as argument
+		
+		if(!elt){
+			//If no element was specified, let's append it to the body
+			var elt = $("form");
+		}
+		
 		details = $('<table />').addClass('details');
 		var row;
 		$.each(tracks, function(){
 			row = $('<tr />').html('<td>'+ this.title +'</td><td>'+ this.duration +'</td>'); 
 			details.append(row);
 		})
-		$('<tr />').append(details).insertAfter(elt.parent());
+		$('<tr />').append(details).insertAfter(elt);
 	}
 	
 	function fetchSoundtrack(id, elt){
@@ -106,7 +112,10 @@ $(function() {
 							displayReleases(releases);
 						}
 						else if(releases.id){
-							alert('You\'re the only one');
+							//We're in the case where there is only one soundtrack available, no list to choose from. Let's log that
+							log('Only one soundtrack available so far. Fetching this one directly...');
+							//Now, let's directly display that on the screen.
+							fetchSoundtrack(releases.id);
 						}
 						else{
 							log('Error: releases is not an object with size > 0')
@@ -198,6 +207,8 @@ $(function() {
 		select: function(event, ui) {
 		  //When a option of the list is selected
 			if (ui.item) {
+				//Let's clean the canvas: remove the previous results
+				$('table').remove();
 		    var url = ui.item.value;
 		    var name = ui.item.label;
 			  log("You selected" + name);
@@ -227,7 +238,7 @@ $(function() {
 		}
 		else{
 			//We fetch the list of tracks corresponding to the click
-			fetchSoundtrack($(this).next().html(),$(this).next())
+			fetchSoundtrack($(this).next().html(),$(this).parent()) //we pass as a param: the ID in the second row, and the row after wich we want this to be displayed
 			$(this).addClass('expanded');
 		}
 	})
