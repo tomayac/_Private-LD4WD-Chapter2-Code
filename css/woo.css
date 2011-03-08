@@ -37,8 +37,24 @@ form{
 	opacity: 0.7;
 	
 }
-#log h2 {margin-bottom: 0.5em; font-size: 14px; text-align: center;}
-#log div{padding: 4px 10px; border-bottom: 1px #fff solid; font-size: 11px;}
+#log a{ position: absolute; top: 5px; right: 5px; color: #fff; font-weight: bold; padding: 3px; }
+#showLogs{ position: absolute; top:5px; right:5px; color: #333; display:none;}
+#log h2 { margin-bottom: 0.5em; font-size: 14px; text-align: center;}
+#log div{ padding: 4px 10px; border-bottom: 1px #fff solid; font-size: 11px;}
 .success{ color: #63C53F; }
 .error{ color: #DF4141; }
 .default{ color: #fff; }
+
+/* Style for the releases table */
+table.releases{
+	width: 750px;
+	margin: auto;
+} 
+table.releases td{ padding: 2px 4px; margin: 2px; text-align: center;}
+table.releases th{ border-bottom: 1px solid #999;}
+
+table.releases td.title{ font-weight: bold; text-align: left;}
+table.releases td.title:before{content: '+ ';}
+table.releases td.expanded:before{content: '- ';}
+
+table.releases tr{ cursor: pointer;} /* rows are clickable*/
