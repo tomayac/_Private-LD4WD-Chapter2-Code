@@ -3,21 +3,32 @@
 */
 
 $(function() {
-	function log( message ) {
-		var ourMessage = $('<div/>').html(message);
+	function log( message, style) {
+		//Define the console to display messages
+		// 3 "styles" for the messages can be used, defined in the CSS via classes: default, success & error
+		if(!style){ var style = "default"; }
+		var ourMessage = $('<div/>').html(message).addClass(style);
 		$('#log').prepend(ourMessage);
 	}
-
+	
 	function getRelease(url) {
-		$.ajax({
-			url: url,
-			dataType: 'jsonp',
-			success: function(data) {
-			  if (data.result.url) {
-			    var id = data.result.url;
-				  log(id);
+		//This function's parameter is the URI of a MusicBrainz Release, e.g, 
+		// http://mb-redir.freebaseapps.com/redir/bc04101a-f099-3da6-a89f-41342bab4b80 -- with our Fight Club use case
+		//It will use the ID of this Release group, and fetch a particular release of the soundtrack 
+		
+		var urlBase = 'http://mm.musicbrainz.org/ws/1/release-group/';
+		var id = url.substring(url.lastIndexOf('/') + 1 ); //get the part of the ur after the last "/", i.e, the ID
 
-				}
+		releaseGroupUrl = urlBase + id + '.html?type=xml&inc=releases';
+		log('Computed release group: ' + releaseGroupUrl);
+		$.ajax({
+			url: releaseGroupUrl,
+			dataType: 'xml',
+			success: function(xml) {
+			  $("/addresses/address", xml).each(function(){
+					alert(this.attr('id'));
+					alert($('title'), this);
+				});
 			}
 		});    		      		  
 	}
@@ -28,12 +39,28 @@ $(function() {
 			dataType: 'jsonp',
 			success: function(data) {
 			  if (data.result.webpage) {
-				  var text = data.result.webpage[0].text;
-				  var soundtrackUrl = data.result.webpage[0].url;
-				  log("soundtrack found @"+ text +": " + soundtrackUrl);
-				  alert("getSoundtrack finished");
-					//getRelease('http://www.freebase.com/experimental/topic/standard' + id);
-				  }
+					var text = false;
+					var soundtrackUrl = false;
+					$.each(data.result.webpage, function(){
+					  if(this.text == 'MusicBrainz'){
+							//We found a MusicBrainz reference to follow
+							if(!text && !soundtrackUrl){
+								text = this.text;
+								soundtrackUrl = this.url;
+							}
+						}
+					});
+					if(!text || !soundtrackUrl){ log('Dead-end: the url ' + url + ' has not yield any MusicBrainz results. Sorry about that.', 'error')}
+				  else{ 
+						log('Bingo! Soundtrack found @MusicBrainz: ' + soundtrackUrl, 'success'); 
+						getRelease('http://www.freebase.com/experimental/topic/standard' + soundtrackUrl);
+					}
+					
+				}
+				else{
+					//no data.result.webpage
+					log("Couldn't find data.result.webpage", 'error');
+				}
 			}
 		});    		      		  
 	}

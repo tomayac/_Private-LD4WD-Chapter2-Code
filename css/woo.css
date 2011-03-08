@@ -39,3 +39,6 @@ form{
 }
 #log h2 {margin-bottom: 0.5em; font-size: 14px; text-align: center;}
 #log div{padding: 4px 10px; border-bottom: 1px #fff solid; font-size: 11px;}
+.success{ color: #63C53F; }
+.error{ color: #DF4141; }
+.default{ color: #fff; }
