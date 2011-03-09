@@ -46,15 +46,12 @@ form{
 .default{ color: #fff; }
 
 /* Style for the releases table */
-table.releases{
+table{
 	width: 750px;
 	margin: auto;
 } 
-table.releases td{ padding: 2px 4px; margin: 2px; text-align: center;}
-table.releases th{ border-bottom: 1px solid #999;}
-
-table.releases td.title{ font-weight: bold; text-align: left;}
-table.releases td.title:before{content: '+ ';}
-table.releases td.expanded:before{content: '- ';}
-
-table.releases tr{ cursor: pointer;} /* rows are clickable*/
+td{ padding: 2px 4px; margin: 2px; text-align: center;}
+table th{ border-bottom: 1px solid #999;}
+table td.title{ font-weight: bold; text-align: left;}
+table tr{ cursor: pointer;} /* rows are clickable*/
+tr.alt{ color: #1A64AE;}
