@@ -49,7 +49,8 @@ form{
 table{
 	width: 750px;
 	margin: auto;
-} 
+}
+table table { width: auto;} 
 td{ padding: 2px 4px; margin: 2px; text-align: center;}
 table th{ border-bottom: 1px solid #999;}
 table td.title{ font-weight: bold; text-align: left;}

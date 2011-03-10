@@ -97,7 +97,23 @@ $('td').live('click',function(){
 		if(regex.test(value)){
 			urlToFollow = "http://www.freebase.com/experimental/topic/standard/en/" + value.substring(value.lastIndexOf("/")+1);  
 			log('Nose will now follow ' + urlToFollow);
-			myNose.follow(urlToFollow, 'jsonp', ['result','properties','/music/album/releases', 'values'],'releases');
+			myNose.follow(urlToFollow, 'jsonp', ['result','webpage'],'release');
+		}
+		var regex = /^http:\/\/www\.freebase\.com\/view\/m\/[0-9a-z]{1,}$/;
+		if(regex.test(value)){
+			urlToFollow = "http://www.freebase.com/experimental/topic/standard/m/" + value.substring(value.lastIndexOf("/")+1);  
+			log('Nose will now follow ' + urlToFollow);
+			myNose.follow(urlToFollow, 'jsonp', ['result','webpage'],'release-group');
+		}
+		
+	}
+	
+	if($('table').hasClass('release-group')){
+		var regex = /^http:\/\/mb-redir\.freebaseapps\.com\/redir\/.{1,}$/;
+		if(regex.test(value)){
+			urlToFollow = "http%3A%2F%2Fmm.musicbrainz.org%2Fws%2F1%2Frelease-group%2F" + value.substring(value.lastIndexOf("/")+1) + ".html%3Ftype%3Dxml%26inc%3Dreleases";  
+			log('Nose will now follow ' + urlToFollow);
+			myNose.follow(urlToFollow, 'xml', ['query','results','metadata','release-group','release-list','release'],'release');
 		}
 	}
 	
@@ -117,6 +133,13 @@ $('td').live('click',function(){
 			log('Nose will now follow ' + urlToFollow);
 			myNose.follow(urlToFollow, 'xml', ['query','results','metadata','release','track-list','track'],'tracklist');
 		}
+		
+		var altRegex = /^[a-z0-9-]{1,}$/;
+		if(altRegex.test(value)){
+			urlToFollow = "http%3A%2F%2Fmm.musicbrainz.org%2Fws%2F1%2Frelease%2F" + value + ".html%3Ftype%3Dxml%26inc%3Dartist%2bcounts%2brelease-events%2bdiscs%2btracks";  			
+			log('Nose will now follow ' + urlToFollow);
+			myNose.follow(urlToFollow, 'xml', ['query','results','metadata','release','track-list','track'],'tracklist');
+		}
 	}
 	
 	if($('table').hasClass('tracklist')){
@@ -125,6 +148,15 @@ $('td').live('click',function(){
 			urlToFollow = "http%3A%2F%2Fmm.musicbrainz.org%2Fws%2F1%2Ftrack%2F" + value + ".html%3Ftype%3Dxml%26inc%3Dartist";  			
 			log('Nose will now follow ' + urlToFollow);
 			myNose.follow(urlToFollow, 'xml', ['query','results','metadata','track', 'artist'],'artist');
+		}
+	}
+	
+	if($('table').hasClass('artist')){
+		var regex = /^[a-z0-9-]{1,}$/;
+		if(regex.test(value)){
+			urlToFollow = "http%3A%2F%2Fmm.musicbrainz.org%2Fws%2F1%2Fartist%2F" + value + ".html%3Ftype%3Dxml%26inc%3Dartist-rels";  			
+			log('Nose will now follow ' + urlToFollow);
+			myNose.follow(urlToFollow, 'xml', ['query','results','metadata','artist', 'relation-list', 'relation' ],'related-artists');
 		}
 	}
 	

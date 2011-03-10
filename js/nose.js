@@ -22,44 +22,51 @@ Nose.prototype.follow = function(source, dataType, accessPath, type){
 				if(data[this]){
 					requestedData = data[this];
 					data = requestedData;
-				}
-				else{ 
-					//!! @ToDo: error handling !! 
-					console.log("Error baby...");
+				
+				} else {
+					//Error handling 
+					console.log("Error baby...cannot access " + this);
+					console.log(data)
+					return false; //break the $.each() loop
 				}
 		});
 		//let's store the result in an instance variable
 		self.data = requestedData;
-		console.log('self.data coming');
-		console.log(self.data);
+
 		//trigger of the event to inform interface that new data is ready
 		$('body').trigger('noseFetch');
 	}
 	
 	switch( dataType ){
-		case 'jsonp':
-			//old classic cross-browser AJAX call via JQuery			
-			$.ajax({
-				url: source,
-				dataType: dataType,
-				success: dataHandler
-			});
-		case 'xml':
-			//Access-Control-Allow-Origin problem -- Let's use YQL to fetch the data
-			
-			//Todo: implement the URLencoding
-			encodedUrl = source;
-			//Now, let's build the YQL query
-			var YQLQuery = "select%20*%20from%20xml%20where%20url%3D%22" + encodedUrl + "%22";
-			var YQLRestQuery = "http://query.yahooapis.com/v1/public/yql?q=" + YQLQuery + "&format=json&diagnostics=true&callback="
-			log('YQL Query: ' + YQLRestQuery);
-
-			$.ajax({
-				url: YQLRestQuery,
-				dataType: 'json',
-				success: dataHandler
-			});
 		
+		case 'jsonp':
+				//old classic cross-browser AJAX call via JQuery			
+				$.ajax({
+					url: source,
+					dataType: dataType,
+					success: dataHandler
+				});
+				break;
+		
+		case 'xml':
+				//Access-Control-Allow-Origin problem -- Let's use YQL to fetch the data
+	
+				encodedUrl = source; //URLencoding is done before the parameter passing
+				//Now, let's build the YQL query
+				var YQLQuery = "select%20*%20from%20xml%20where%20url%3D%22" + encodedUrl + "%22";
+				var YQLRestQuery = "http://query.yahooapis.com/v1/public/yql?q=" + YQLQuery + "&format=json&diagnostics=true&callback="
+				log('YQL Query: ' + YQLRestQuery);
+
+				$.ajax({
+					url: YQLRestQuery,
+					dataType: 'json',
+					success: dataHandler
+				});
+				break;
+		
+		default:
+				console.log("Fault! Datatype is not in the set supported by the app || i.e jsonp or xml at the moment.");
+			
 	}
 	
 }
@@ -69,22 +76,33 @@ Nose.prototype.render = function(){
 	// The 2 functions CreateTableView() and CreateDetailView() are adapted from Zachary Hunter 
 	// Source : http://www.zachhunter.com/2010/04/json-objects-to-html-table/
 	function CreateTableView(objArray) {
-			console.log(objArray);
+			
+			//Let's be sure that the parameter is an Array of objects
+			if(!objArray[0]){
+				//If it's not, let's create it
+				objArray = new Array(objArray);
+			}
+			
 	    var str = '<table class="tableView '+ self.type +'">';
 
 	    // table head
 	    str += '<thead><tr>';
-	    for (var index in objArray[0]) {
-	        str += '<th scope="col">' + index + '</th>';
-	    }
-	    str += '</tr></thead>';
+	    
+			for (var index in objArray[0]) {
+        str += '<th scope="col">' + index + '</th>';
+    	}
+    	str += '</tr></thead>';
 
 	    // table body
 	    str += '<tbody>';
 	    for (var i = 0; i < objArray.length; i++) {
 	        str += (i % 2 == 0) ? '<tr class="alt">' : '<tr>';
 	        for (var index in objArray[i]) {
-	            str += '<td>' + objArray[i][index] + '</td>';
+	            if(typeof objArray[i][index] != 'object'){
+								str += '<td>' + objArray[i][index] + '</td>';
+							} else {
+								str += '<td>' + CreateTableView(objArray[i][index]) + '</td>';
+							}
 	        }
 	        str += '</tr>';
 	    }
@@ -116,6 +134,8 @@ Nose.prototype.render = function(){
 	}
 	
 	console.log('Now rendering...');
-	this.rendering = CreateTableView(this.data);
+	if(this.data){
+		this.rendering = CreateTableView(this.data);
+	}
 	$('body').trigger('updateLinkedData');
 }
