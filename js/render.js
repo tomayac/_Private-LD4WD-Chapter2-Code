@@ -13,16 +13,12 @@ if(svgElements){
 
 var vis = new pv.Panel()
     .width(1000)
-    .height(500)
-    .left(75)
-    .right(-75)
-    .top(-30)
-    .bottom(-80);
+    .height(500);
 
 var tree = vis.add(pv.Layout.Tree)
     .nodes(pv.dom(json).root(rootName).nodes())
-    .depth(85)
-    .breadth(15.25)
+    .depth(65)
+    .breadth(20.25)
     .orient("radial");
 
 tree.link.add(pv.Line);

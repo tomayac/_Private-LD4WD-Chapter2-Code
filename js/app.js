@@ -54,6 +54,8 @@ $('#movie').autocomplete({
 });
 
 /* Legacy from the precedent interface
+
+
 //Now, when user clicks on something, let's do the right thing according to what's in there
 $('td').live('click',function(){
 	var value = $(this).html();
