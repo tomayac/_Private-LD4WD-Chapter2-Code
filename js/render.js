@@ -1,0 +1,37 @@
+/***************************************/
+/* Let's use Protovis to see the magic */
+/***************************************/
+
+var render = function(json, rootName){
+
+var svgElements = document.getElementsByTagName('svg')
+if(svgElements){
+	for(var i=0; i<svgElements.length ; i++){
+		svgElements[i].parentElement.removeChild(svgElements[i]);
+	}
+}
+
+var vis = new pv.Panel()
+    .width(1000)
+    .height(500)
+    .left(75)
+    .right(-75)
+    .top(-30)
+    .bottom(-80);
+
+var tree = vis.add(pv.Layout.Tree)
+    .nodes(pv.dom(json).root(rootName).nodes())
+    .depth(85)
+    .breadth(15.25)
+    .orient("radial");
+
+tree.link.add(pv.Line);
+
+tree.node.add(pv.Dot).fillStyle(function(n){n.firstChild ? "#aec7e8" : "#ff7f0e"});
+tree.label.add(pv.Label);
+
+vis.render();
+
+console.log('rendering done');
+
+}

@@ -1,30 +1,15 @@
-/***********************/
-/* URL Encode / Decode */
-/***********************/
-//Source : http://plugins.jquery.com/project/URLEncode
-$.extend({URLEncode:function(c){var o='';var x=0;c=c.toString();var r=/(^[a-zA-Z0-9_.]*)/;
-  while(x<c.length){var m=r.exec(c.substr(x));
-    if(m!=null && m.length>1 && m[1]!=''){o+=m[1];x+=m[1].length;
-    }else{if(c[x]==' ')o+='+';else{var d=c.charCodeAt(x);var h=d.toString(16);
-    o+='%'+(h.length<2?'0':'')+h.toUpperCase();}x++;}}return o;},
-URLDecode:function(s){var o=s;var binVal,t;var r=/(%[^%]{2})/;
-  while((m=r.exec(o))!=null && m.length>1 && m[1]!=''){b=parseInt(m[1].substr(1),16);
-  t=String.fromCharCode(b);o=o.replace(m[1],t);}return o;}
-});
-
 /****************************/
 /* Setup of event listening */
 /****************************/
 
 myNose = new Nose();
+myHead = new Head();
 
-//Attach custom event to listen to updates
-$('body').bind('noseFetch', function(){
-	myNose.render();
+$('body').bind('dataFetched', function(){
+	myHead.format(myNose.data);
+	render(myHead.memory, myHead.filmName);
+	
 })
-$('body').bind('updateLinkedData', function(){
-	$('#data').html(myNose.rendering);
-});
 
 /****************************/
 /* Autocompletion behaviour */
@@ -58,13 +43,17 @@ $('#movie').autocomplete({
 			$('table').remove();
 	    var url = ui.item.value;
 	    var name = ui.item.label;
-		  log("You selected" + name);
-		  log("Will now try to fetch data about" + url);
-	  	myNose.follow(url, 'jsonp', ['result','properties','/film/film/soundtrack', 'values'],'soundtracks');
+		  console.log("You selected" + name);
+		  console.log("Will now try to fetch data about" + url);
+	  	var filmName = name.substr(0,name.lastIndexOf(' '));
+			myHead.setUp(filmName);
+			myNose.follow(url, 'jsonp', ['result','properties','/film/film/soundtrack', 'values'],'soundtracks');
+			
 		}
 	},
 });
 
+/* Legacy from the precedent interface
 //Now, when user clicks on something, let's do the right thing according to what's in there
 $('td').live('click',function(){
 	var value = $(this).html();
@@ -140,10 +129,4 @@ $('td').live('click',function(){
 	
 });
 
-//Woohoo! We're all set up. Let's gooo!
-log("hello, it seems I'm ready to use. Welcome folks!");
-
-//testing xml case || working so far !!
-//var encodedUrl = 'http%3A%2F%2Fmm.musicbrainz.org%2Fws%2F1%2Frelease%2Fc8146647-dd7b-40cc-9d46-c53489a3651d.html%3Ftype%3Dxml%26inc%3Dartist%2bcounts%2brelease-events%2bdiscs%2btracks';
-//myNose.follow(encodedUrl, 'xml', ['query', 'results', 'metadata', 'release','track-list','track']);
-
+*/
