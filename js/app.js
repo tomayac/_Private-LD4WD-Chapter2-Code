@@ -12,28 +12,6 @@ URLDecode:function(s){var o=s;var binVal,t;var r=/(%[^%]{2})/;
   t=String.fromCharCode(b);o=o.replace(m[1],t);}return o;}
 });
 
-/***********************/
-/* The awesome console */
-/***********************/
-
-function log( message, style) {
-	//Define the console to display messages
-	// 3 "styles" for the messages can be used, defined in the CSS via classes: default, success & error
-	if(!style){ var style = "default"; }
-	var ourMessage = $('<div/>').html(message).addClass(style);
-	$('#log').prepend(ourMessage);
-}
-
-/* Console behaviour */
-$("#log a").click(function(){
-	$(this).parent().toggle();
-	$("#showLogs").toggle();
-})
-$("#showLogs").click(function(){
-	$(this).toggle();
-	$("#log").toggle();
-})
-
 /****************************/
 /* Setup of event listening */
 /****************************/

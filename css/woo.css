@@ -24,23 +24,6 @@ form{
 	padding: 15px;
 }
 
-#log{
-	background-color: #000; color: #fff; font-family: Courier, mono;
-	padding: 5px;
-	width: 100%;
-	max-height: 220px;
-	overflow-y:scroll;
-	position: fixed;
-	bottom: 0;
-	left:0;
-	border-top: 2px #999 solid;
-	opacity: 0.7;
-	
-}
-#log a{ position: absolute; top: 5px; right: 5px; color: #fff; font-weight: bold; padding: 3px; }
-#showLogs{ position: absolute; top:5px; right:5px; color: #333; display:none;}
-#log h2 { margin-bottom: 0.5em; font-size: 14px; text-align: center;}
-#log div{ padding: 4px 10px; border-bottom: 1px #fff solid; font-size: 11px;}
 .success{ color: #63C53F; }
 .error{ color: #DF4141; }
 .default{ color: #fff; }
