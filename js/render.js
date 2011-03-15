@@ -4,16 +4,17 @@
 
 var render = function(json, rootName){
 
-var svgElements = document.getElementsByTagName('svg')
+var svgElements = document.getElementsByTagName('svg');
 if(svgElements){
 	for(var i=0; i<svgElements.length ; i++){
 		svgElements[i].parentElement.removeChild(svgElements[i]);
+		console.log('removing SVG Element');
 	}
 }
 
 var vis = new pv.Panel()
-    .width(1000)
-    .height(500);
+    .width(2000)
+    .height(1200);
 
 var tree = vis.add(pv.Layout.Tree)
     .nodes(pv.dom(json).root(rootName).nodes())
