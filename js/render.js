@@ -13,10 +13,10 @@ if(svgElements){
 }
 
 var vis = new pv.Panel()
-    .width(2000)
+    .width(1000)
     .height(1200);
 
-var tree = vis.add(pv.Layout.Tree)
+var tree = vis.add(pv.Layout.Tree).left(-400)
     .nodes(pv.dom(json).root(rootName).nodes())
     .depth(65)
     .breadth(20.25)

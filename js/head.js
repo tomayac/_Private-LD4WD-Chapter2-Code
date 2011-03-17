@@ -45,7 +45,7 @@ Head.prototype.think = function(){
 						console.log('No following ' + nextStep['urlToFetch']);
 						self.nose.follow(nextStep['urlToFetch'], nextStep['typeOfData'],nextStep['pathToFollow']);
 					
-					} else{
+					} else {
 						//Case of a regular value. Let's trick the key, and set the value to true
 						newValue = obj[key];
 						newKey = key;
@@ -74,7 +74,6 @@ Head.prototype.match = function(dataToMatch){
 	for (var key in semanticMatching){
 		//check Regex and make our nose follow the right direction
 		var regex = new RegExp(key,'g');
-		console.log(regex.source);
 		var match = regex.exec(dataToMatch);
 		if(match){ 
 			var urlToFetch = semanticMatching[key][0].replace('%%',match[1]);
@@ -83,7 +82,6 @@ Head.prototype.match = function(dataToMatch){
 			return {'urlToFetch': urlToFetch, 'typeOfData': typeOfData, 'pathToFollow': pathToFollow};
 		}
 	}
-	console.log('no match found for '+ dataToMatch);
 	return false;
 }
 Head.prototype.format = function(){
@@ -91,11 +89,20 @@ Head.prototype.format = function(){
 	var self = this;
 	console.log('begin formatting');
 	console.log(this.memory);
-	self.simpleTree = self.memory;
+	this.simpleTree = ObjectHandler.getCloneOfObject(this.memory);
 	(function loopThroughJSON(obj) {
 	  var newKey;
 		var newValue;
 		for (var key in obj) {
+			
+			//Shortening key -- bad idea
+			//if(key.length > 15){
+			//	newKey = key.substr(0,15) + '...';
+			//	newValue = obj[key];
+			//	delete obj[key];
+			//	obj[newKey] = obj[newValue];
+			//	loopThroughJSON(obj[newKey]);
+			//}
 	    if (typeof(obj[key]) == 'object') {
 	      loopThroughJSON(obj[key]);
 	    } else {
@@ -104,7 +111,7 @@ Head.prototype.format = function(){
 					key = obj[key];
 					console.log('getting rid of key' + key);
 				}
-				var isCryptic = new RegExp('^id:.{1,}$','g');
+				var isCryptic = new RegExp('^(id|url):.{1,}$','g');
 				if(isCryptic.test(key)){
 					console.log('getting rid of key' + key);
 					delete obj[key];

@@ -7,7 +7,7 @@ function Nose(){
 	this.data = null; //once data is fetched, here it goes 
 	this.rendering = ''; //variable to hold the rendered HTML
 	this.type = 'neutral'; //variable containing the type of data
-	this.lastRequest = new Date().getTime;
+	this.lastRequest = new Date().getTime();
 }
 Nose.prototype.follow = function(source, dataType, accessPath, type){
 	var self = this;
@@ -53,8 +53,9 @@ Nose.prototype.follow = function(source, dataType, accessPath, type){
 	//If last request was fired less than a second ago, let's wait.
 	var now = new Date().getTime();
 	if(now < self.lastRequest + 1000){ sleep(1000); }
+	else{ console.log('Not feeling sleepy. Now is' + now + ' and last request was ' + self.lastRequest); }
 	
-	self.lastRequest = new Date().getTime;
+	self.lastRequest = new Date().getTime();
 	switch( dataType ){
 		
 		case 'jsonp':

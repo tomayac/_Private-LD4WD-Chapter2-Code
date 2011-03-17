@@ -15,3 +15,9 @@ ToDoS :
 - Find a good & reliable source of information. 
   It seems it's kind of a unicorn at the moment. Solution: use YQL to aggregate several sources of information?
   + idea: use the YQL Jquery plugin? ()
+  
+Credits
+-------
+
+Heavily influenced by http://jqueryui.com/demos/autocomplete/remote-jsonp.html
+

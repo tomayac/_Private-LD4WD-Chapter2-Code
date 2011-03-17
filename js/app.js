@@ -28,7 +28,7 @@ $('#movie').autocomplete({
 			success: function(data) {
 				response($.map(data.result, function(item) {
 					return {
-						label: item.name + ' http://freebase.com' + item.id,
+						label: item.name,
 						value: 'http://www.freebase.com/experimental/topic/standard' + item.id
 					}
 				}));
@@ -39,8 +39,7 @@ $('#movie').autocomplete({
 	select: function(event, ui) {
 	  //When a option of the list is selected
 		if (ui.item) {
-			//Let's clean the canvas: remove the previous results
-			$('table').remove();
+
 	    var url = ui.item.value;
 	    var name = ui.item.label;
 		  console.log("You selected" + name);
