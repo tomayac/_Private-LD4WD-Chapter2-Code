@@ -15,9 +15,44 @@ TreeBuilder.prototype.start = function(startUrl){
 }
 
 TreeBuilder.prototype.integrate = function(requestId){
-	var data = this.retrieve(requestId);
+	var result = this.retrieve(requestId);
 	var insertionPoint = this.findInsertionPoint(requestId);
-	insertionPoint[requestId] = data;
+	switch(result.type){
+			
+			case 'soundtracks':
+				insertionPoint[result.type] = result.data[0];
+				//delete the insertion point token
+				delete this.content[this.filmName];
+				break;
+				
+			case 'release-group link':
+				for(linkObj in result.data){
+					if(linkObj.text == 'MusicBrainz' ){
+						insertionPoint[result.type] = linkObj;
+					}
+				}
+				//delete the insertion point token
+				//delete insertionPoint.parentNode[requestId];
+				break;
+				
+			case 'release-group':
+				insertionPoint[result.type] = linkObj;
+				//delete the insertion point token
+				//delete insertionPoint.parentNode[requestId];
+				break;
+				
+			case 'tracks':
+				insertionPoint[result.type] = linkObj;
+				//delete the insertion point token
+				//delete insertionPoint.parentNode[requestId];
+				break;
+				
+			default:
+				console.error('type is not among the type supported!');
+				insertionPoint[requestId] = result.data;
+				insertionPoint['type'] = result.type;
+	}
+	
 	console.log('Insertion of data done for request #' + requestId);
 	return true;
 }
@@ -49,3 +84,4 @@ TreeBuilder.prototype.findInsertionPoint = function(requestId){
 	return insertionPoint;
 	
 }
+

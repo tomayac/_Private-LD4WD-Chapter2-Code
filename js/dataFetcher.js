@@ -22,7 +22,7 @@ DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type){
 DataFetcher.prototype.start = function(){
 	//If the start() method is invoked, let's begin to fire some request
 	var self = this;
-	this.ID = setInterval(function(){self.fireNextRequest();}, 1000);
+	this.ID = setInterval(function(){self.fireNextRequest();}, 2000);
 }
 
 DataFetcher.prototype.fireNextRequest = function(){
@@ -55,7 +55,7 @@ DataFetcher.prototype.fireXmlRequest = function(request){
 	var self = this;
 	
 	//Access-Control-Allow-Origin problem -- Let's use YQL to fetch the data
-	encodedUrl = encodeURIComponent(source); //URLencoding is done before the parameter passing
+	encodedUrl = encodeURIComponent(request.source); //URLencoding is done before the parameter passing
 	
 	//Now, let's build the YQL query
 	var YQLQuery = "select%20*%20from%20xml%20where%20url%3D%22" + encodedUrl + "%22";
