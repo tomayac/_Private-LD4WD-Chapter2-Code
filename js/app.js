@@ -1,14 +1,27 @@
+/*******************************/
+/* Setup & creation of objects */
+/*******************************/
+
+var displayWaiting = function(){
+	var img = $('<img/>').attr({'src': 'img/ajax-loader.gif', 'alt': 'ajax loader', 'class': 'waiting'});
+	$('body').append(img);
+}
+var removeWaiting = function(){
+	$('.waiting').remove();
+}
+
 /****************************/
 /* Setup of event listening */
 /****************************/
 
-
-
-$('body').bind('dataFetched', function(){
-	myHead.memorize(myNose.data);
-	myHead.think();
-	//myHead.format(); //render it properly for user's display
-	render(myHead.memory, myHead.filmName);
+$('body').bind('dataFetched', function(event, requestId){
+	console.warn('dataFetched signal catched! Woohoo, my results are ready for request #' + requestId);
+	mySemanticDealer.handleData(requestId);
+})
+$('body').bind('upToDate', function(event){
+	console.warn('Interface up-to-date');
+	removeWaiting();
+	render(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
 })
 
 /****************************/
@@ -42,15 +55,12 @@ $('#movie').autocomplete({
 
 	    var url = ui.item.value;
 	    var name = ui.item.label;
-		  console.log("You selected" + name);
-		  console.log("Will now try to fetch data about" + url);
-	  	var filmName = name.substr(0,name.lastIndexOf(' '));
+		  console.log("You selected " + name);
+		  console.log("Will now try to fetch data about " + url);
 			
-			myNose = new Nose();
-			myHead = new Head();
-			myHead.nose = myNose;
-			myHead.setUp(filmName);
-			myNose.follow(url, 'jsonp', ['result','properties','/film/film/soundtrack', 'values'],'soundtracks');
+			mySemanticDealer = new SemanticDealer(name, url);
+			displayWaiting();
+			mySemanticDealer.start();
 			
 		}
 	},
