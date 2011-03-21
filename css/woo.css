@@ -11,7 +11,7 @@ h1{
 	text-align: center; 
 	font-family: Arial, sans-serif; 
 	padding: 8px; 
-	border-bottom: 1px #64E969 solid;
+	border-bottom: 1px #FF5E99 solid;
 	background-color: #333;
 	background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#333));
 	background: -moz-linear-gradient(top,  #666,  #333); /* for firefox 3.6+ */
@@ -23,7 +23,7 @@ h1{
 nav{
 	position: absolute;
 	top: 60px;
-	right: 10px;
+	right: 20px;
 }
 label{ display: block;}
 input{ width: 390px; margin-top: 5px;}
