@@ -3,13 +3,28 @@
 /* Styling, just a bit, for fun */
 /* ---------------------------- */
 
-body{
-	width: 960px;
-	margin: 50px auto;
+body, html{
 	color: #444;
-	position: relative;
+	width: 100%;
 }
-h1{ text-align: center; font-family: Arial, sans-serif; padding-bottom: 0.2em; border-bottom: 1px #999 solid;}
+h1{ 
+	text-align: center; 
+	font-family: Arial, sans-serif; 
+	padding: 8px; 
+	border-bottom: 1px #64E969 solid;
+	background-color: #333;
+	background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#333));
+	background: -moz-linear-gradient(top,  #666,  #333); /* for firefox 3.6+ */
+	color: #fff;
+	font-size:20px;
+	font-weight: normal;
+	
+}
+nav{
+	position: absolute;
+	top: 60px;
+	right: 10px;
+}
 label{ display: block;}
 input{ width: 390px; margin-top: 5px;}
 form{
@@ -28,7 +43,17 @@ form{
 .error{ color: #DF4141; }
 .default{ color: #fff; }
 
+.waiting{
+	width: 500px;
+	margin: auto;
+	color: #FF5E99;
+	text-align: center;
+	font-family: courier, mono;
+	font-size: 0.9em;
+}
+progress{ margin: 7px;}
 svg{
+	width: 960px;
   margin: auto;
 	background-color: #efefef; 
 	border-radius: 5px;
@@ -38,7 +63,6 @@ svg{
 	border: 1px #999 solid;
 	padding: 15px;
 }
-
 
 /* Style for the releases table */
 table{

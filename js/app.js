@@ -2,9 +2,14 @@
 /* Setup & creation of objects */
 /*******************************/
 
-var displayWaiting = function(){
-	var img = $('<img/>').attr({'src': 'img/ajax-loader.gif', 'alt': 'ajax loader', 'class': 'waiting'});
-	$('body').append(img);
+var displayWaiting = function(progress, activity){
+	$('.waiting').remove();
+	
+	//var img = $('<img/>').attr({'src': 'img/ajax-loader.gif', 'alt': 'ajax loader', 'class': 'waiting'});
+	var progress = $('<progress />').attr({'max': '100', 'value': progress}).html(progress + '%');
+	var txt = $('<p />').html('<span>' + activity);
+	var loadingContainer = $('<div />').addClass('waiting').append(progress).append(txt);
+	loadingContainer.insertAfter('form');
 }
 var removeWaiting = function(){
 	$('.waiting').remove();
@@ -18,18 +23,30 @@ $('body').bind('dataFetched', function(event, requestId){
 	console.warn('dataFetched signal catched! Woohoo, my results are ready for request #' + requestId);
 	mySemanticDealer.handleData(requestId);
 })
+$('body').bind('loading', function(event, progress, activity){
+	//var progress = mySemanticDealer.treeBuilder.progress;
+	//var activity = mySemanticDealer.treeBuilder.activity;
+	console.warn('Interface loading, at '+ progress +'%. Current activity: '+ activity);
+	displayWaiting(progress, activity);
+})
 $('body').bind('upToDate', function(event){
 	console.warn('Interface up-to-date');
 	removeWaiting();
-	render(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
+	mySemanticDealer.treeBuilder.computeSimpleTree();
+	var nbTracks = mySemanticDealer.treeBuilder.simpleTree.tracks.length;
+	var breadth = Math.floor(220/nbTracks);
+	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName, breadth);
 })
 
-/***********************/
-/* For testing purpose */
-/***********************/
+/**********************************************/
+/* For testing purpose only -- Keep out folks */
+/**********************************************/
 
 $('#stop').click(function(){
 	mySemanticDealer.dataFetcher.stop();
+});
+$('#complexTree').click(function(){
+	render(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
 });
 
 /****************************/
@@ -67,30 +84,9 @@ $('#movie').autocomplete({
 		  console.log("Will now try to fetch data about " + url);
 			
 			mySemanticDealer = new SemanticDealer(name, url);
-			displayWaiting();
+			displayWaiting(0, 'In the starting blocks. Ready?');
 			mySemanticDealer.start();
 			
 		}
 	},
-});
-
-/*************************************/
-/* Let's simplify the tree on demand */
-/*************************************/
-
-$("h1").click(function(){
-	
-	if($(this).hasClass('simple')){
-		$(this).removeClass('simple');
-		console.log('rendering complex tree');
-		console.log(myHead.memory);
-		render(myHead.memory, myHead.filmName);
-		$(this).css('font-family', 'monospace');
-	} else {
-		myHead.format();
-		render(myHead.simpleTree, myHead.filmName);
-		$(this).css('font-family', 'Arial, sans-serif');
-		$(this).addClass('simple');
-	}
-	
 });

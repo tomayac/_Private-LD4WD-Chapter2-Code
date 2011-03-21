@@ -9,8 +9,10 @@
     
   	<title>From a movie to related artists -- a linked data story</title> 
   	
+  	<link rel="stylesheet" href="css/reset.css" /> 
   	<link rel="stylesheet" href="http://jqueryui.com/themes/base/jquery.ui.theme.css">
   	<link rel="stylesheet" href="http://jqueryui.com/themes/base/jquery.ui.autocomplete.css">
+  	
   	<link rel="stylesheet" href="css/woo.css" /> 
 
     <script src="js/libs/modernizr-1.7.min.js"></script>
@@ -18,7 +20,15 @@
   </head> 
   <body>
     <h1>From a movie to related artists -- a linked data story</h1>  
-    <a href="#" id="stop">Stop!</a>
+    <nav>
+      <ul>
+        <li>
+          <a href="#" id="stop">Emergency Stop :)</a> 
+        </li>
+        <li>
+          <a href="#" id="complexTree">Complex tree</a>
+        </li>
+    </nav>
     <form class="ui-widget"> 
     	<label for="movie">Movie title: </label> 
     	<input type="text" id="movie" /> 
@@ -37,34 +47,38 @@
   	<script src="js/app.js"></script> 	
   	<script type="text/javascript+protovis">
   	  //For some reason, the JS can't be external. Has to do with the weird javascript+protovis type and MIME type.
-  	  var render = function(json, rootName){
+  	  var render = function(json, rootName, breadth){
+        
+        if(!breadth){var breadth = 20;}
+        
+        var svgElements = document.getElementsByTagName('svg');
+        if(svgElements){
+        	for(var i=0; i<svgElements.length ; i++){
+        		svgElements[i].parentElement.removeChild(svgElements[i]);
+        		console.log('removing SVG Element');
+        	}
+        }
 
-      var svgElements = document.getElementsByTagName('svg');
-      if(svgElements){
-      	for(var i=0; i<svgElements.length ; i++){
-      		svgElements[i].parentElement.removeChild(svgElements[i]);
-      		console.log('removing SVG Element');
-      	}
-      }
+        var vis = new pv.Panel()
+            .width(960)
+            .height(800);
 
-      var vis = new pv.Panel()
-          .width(1000)
-          .height(1200);
+        var tree = vis.add(pv.Layout.Tree).left(-250)
+            .nodes(pv.dom(json).root(rootName).nodes())
+            .depth(65)
+            .breadth(breadth)
+            .orient("radial");
 
-      var tree = vis.add(pv.Layout.Tree).left(-400)
-          .nodes(pv.dom(json).root(rootName).nodes())
-          .depth(65)
-          .breadth(20.25)
-          .orient("radial");
+        tree.link.add(pv.Line);
 
-      tree.link.add(pv.Line);
+        tree.node.add(pv.Dot).fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e" );
+        tree.label.add(pv.Label)
+        .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
+        .textStyle(function(n) n.firstChild ? "#999" : "#333" );
 
-      tree.node.add(pv.Dot).fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e" );
-      tree.label.add(pv.Label).text(function(n) n.firstChild ? n.nodeName: n.nodeValue );
+        vis.render();
 
-      vis.render();
-
-      console.log('rendering done');
+        console.log('rendering done');
 
       }
   	</script>

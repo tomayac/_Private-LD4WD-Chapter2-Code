@@ -6,6 +6,9 @@ function TreeBuilder(filmName, dataFetcher){
 	this.root = filmName;
 	this.dataFetcher = dataFetcher;
 	this.content = new Object();
+	this.simpleTree = new Object();
+	this.progress = 0;
+	this.activity = 'Starting block';
 }
 
 TreeBuilder.prototype.start = function(startUrl){
@@ -23,6 +26,10 @@ TreeBuilder.prototype.integrate = function(requestId){
 				insertionPoint[result.type] = result.data[0];
 				//delete the insertion point token
 				delete this.content[this.filmName];
+				
+				this.progress = 25;
+				this.activity = 'Searching for realease-group links...';
+				
 				break;
 				
 			case 'release-group link':
@@ -34,6 +41,10 @@ TreeBuilder.prototype.integrate = function(requestId){
 				}
 				//delete the insertion point token
 				delete this.content.soundtracks.url;
+				
+				this.progress = 50;
+				this.activity = 'Searching a MusicBrainz release...';
+				
 				break;
 				
 			case 'release-group':
@@ -49,14 +60,41 @@ TreeBuilder.prototype.integrate = function(requestId){
 				}
 				//delete the insertion point token
 				delete this.content.soundtracks['release-group link'].url;
+				
+				this.progress = 75;
+				this.activity = 'Yay! Found it! Sucking data...';
+				
 				break;
 				
 			case 'tracks':
-				insertionPoint[result.type] = result.data;
+				
+				//Formatting duration of songs & removing (possible) artist data
+				for(var i=0; i<result.data.track.length; i++){
+					var duration = result.data.track[i].duration;
+					var min = Math.floor((duration/1000)/60); //Duration is given in millisec
+					var sec = Math.floor( Math.floor(duration/1000) - min*60);
+					var humanReadableDuration = min+"' "+sec+"s";
+					result.data.track[i].duration = humanReadableDuration;
+					
+					if(result.data.track[i].artist){
+						delete result.data.track[i].artist;
+					}
+				}
+				
+				insertionPoint[result.type] = result.data.track;
 				console.log('inserting tracks');
 				console.log(result.data);
-				//delete the insertion point token
-				//delete this.content.soundtracks['release-group link'].url;
+				
+				//little bit of cleaning here -- data we don't need to print
+				delete this.content.soundtracks['release-group link']['release-group'].id;
+				delete this.content.soundtracks['release-group link']['release-group'].asin;
+				delete this.content.soundtracks['release-group link']['release-group']['track-list'];
+				
+				this.dataFetcher.stop();
+				this.progress = 100;
+				this.activity = 'Tracks found! Will now sleep for a while... :)';
+				console.log('Just stopped the dataFetcher & semanticDealer, cause we got our tracks :)')
+				
 				break;
 				
 			default:
@@ -93,7 +131,10 @@ TreeBuilder.prototype.findInsertionPoint = function(requestId){
 	})(self.content);
 	console.log('will exit the function in a sec.');
 	console.log(insertionPoint);
-	return insertionPoint;
-	
+	return insertionPoint;	
+}
+
+TreeBuilder.prototype.computeSimpleTree = function(){
+	this.simpleTree['tracks'] = this.content.soundtracks['release-group link']['release-group'].tracks;
 }
 
