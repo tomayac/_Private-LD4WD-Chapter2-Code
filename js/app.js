@@ -24,6 +24,14 @@ $('body').bind('upToDate', function(event){
 	render(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
 })
 
+/***********************/
+/* For testing purpose */
+/***********************/
+
+$('#stop').click(function(){
+	mySemanticDealer.dataFetcher.stop();
+});
+
 /****************************/
 /* Autocompletion behaviour */
 /****************************/

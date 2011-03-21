@@ -26,25 +26,37 @@ TreeBuilder.prototype.integrate = function(requestId){
 				break;
 				
 			case 'release-group link':
-				for(linkObj in result.data){
-					if(linkObj.text == 'MusicBrainz' ){
-						insertionPoint[result.type] = linkObj;
+				for(var i=0; i<result.data.length; i++){
+					if(result.data[i].text == 'MusicBrainz' ){
+						insertionPoint[result.type] = result.data[i];
+						console.log('integrated, yay');
 					}
 				}
 				//delete the insertion point token
-				//delete insertionPoint.parentNode[requestId];
+				delete this.content.soundtracks.url;
 				break;
 				
 			case 'release-group':
-				insertionPoint[result.type] = linkObj;
+				if(result.data[0]){
+					//Several release-group -- e.g., Fight Club
+					delete result.data[0]['text-representation'];
+					insertionPoint[result.type] = result.data[0];
+				}
+				else{
+					//Only one release-group -- e.g., The Big Lebowsky
+					delete result.data['text-representation'];
+					insertionPoint[result.type] = result.data;
+				}
 				//delete the insertion point token
-				//delete insertionPoint.parentNode[requestId];
+				delete this.content.soundtracks['release-group link'].url;
 				break;
 				
 			case 'tracks':
-				insertionPoint[result.type] = linkObj;
+				insertionPoint[result.type] = result.data;
+				console.log('inserting tracks');
+				console.log(result.data);
 				//delete the insertion point token
-				//delete insertionPoint.parentNode[requestId];
+				//delete this.content.soundtracks['release-group link'].url;
 				break;
 				
 			default:
