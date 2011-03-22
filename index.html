@@ -50,7 +50,116 @@
   	<script src="js/app.js"></script> 	
   	<script type="text/javascript+protovis">
   	  //For some reason, the JS can't be external. Has to do with the weird javascript+protovis type and MIME type.
-  	  var render = function(json, rootName, breadth){
+  	  var render = function(data, title, breadth){
+        if(!breadth){var breadth = 17;}
+        
+        var tracks = data.tracks;
+        
+        var vis = new pv.Panel()
+            .width(1000)
+            .height(800);
+
+        var tree = vis.add(pv.Layout.Tree).left(-400)
+            .nodes(pv.dom(data).root(title).nodes())
+            .depth(80)
+            .breadth(breadth)
+            .orient("radial");
+
+        tree.link.add(pv.Line)
+            .visible(function(l){ 
+              return l.nodeName != "id" && l.nodeName != "duration"
+            });
+        
+        //Black BG for our vinyl
+        tree.node.add(pv.Dot)
+          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .radius(25)
+          .fillStyle("black")
+          .strokeStyle("white");
+        
+        //orange banner
+        tree.node.add(pv.Dot)
+          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .radius(13)
+          .fillStyle("orange")
+          .strokeStyle("white");
+          
+        
+        //black inside
+        tree.node.add(pv.Dot)
+          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .radius(8)
+          .fillStyle("black")
+          .strokeStyle("white");
+        
+        //white center
+        tree.node.add(pv.Dot)
+          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .radius(4)
+          .fillStyle("white")
+          .strokeStyle("black");
+        
+        //Active Dots, which triggers the AJAX request
+        tree.node.add(pv.Dot)
+          .def("i", -1)
+          .radius(function(n) n.firstChild ? '5' : '25')
+          .cursor("pointer")
+          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .event("click", function(n){
+            var id = n.parentNode.firstChild.nodeValue;
+            console.log('Just clicked on ' + n.nodeValue);
+            console.log('I guess you would like to see more about' + id + '...right?!');
+      			var urlToQuery = 'http://mm.musicbrainz.org/ws/1/track/' + id + '?type=xml&inc=artist+artist-rels';
+
+      			var encodedUrl = encodeURIComponent(urlToQuery); //URLencoding is done before the parameter passing
+          	var YQLQuery = 'select%20*%20from%20xml%20where%20url%3D%22' + encodedUrl + '%22';
+          	var YQLRestQuery = 'http://query.yahooapis.com/v1/public/yql?q=' + YQLQuery + '&format=json&diagnostics=true&callback=';
+            console.log('Will fire request: '+ YQLRestQuery);
+            $.ajax({        			
+        		  url: YQLRestQuery,
+        		  dataType: 'json',
+        		  success: function(data) {
+        			  console.log(data);
+        			  var relations = data.query.results.metadata.track['relation-list'].relation;
+        			  if(relations){
+        			    var credits = "";
+        			    for(var i=0; i<relations.length; i++){
+        			      console.log(relations);
+        			      credits += relations[i].type + ': ';
+        			      credits += relations[i].artist.name + ' -- ';
+        			    }
+        			    n.nodeValue = credits;
+      			    } else {
+      			      n.nodeValue = "YQL Error. Sorry."
+      			    }
+        			  console.log('Just changed the nodeValue to ' + n.nodeValue);
+        			  vis.render();
+        		  }
+        		});
+          })
+          .fillStyle(function(n) this.i() == this.index ? "red" : "rgba(0, 0, 255, 0.01)")
+          .strokeStyle(function(n) this.i() == this.index ? "black" : "white")
+          .event("mouseover", function() this.i(this.index))
+          .event("mouseout", function() this.i(-1));
+            
+            
+        tree.label.add(pv.Label)
+          .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
+          .textMargin(function(n) n.firstChild ? 3: 35 )
+          .font(function(n) n.firstChild ? "12px Arial, sans-serif": "16px Arial, sans-serif")
+          .visible(function(n) n.nodeName != "id" && n.nodeName != "duration")
+          .textStyle(function(n){ 
+            //console.log(this.index);
+            return n.firstChild ? "#999" : "#333";
+          });
+
+        vis.render();
+
+        console.log('rendering done');
+
+      }
+  	  
+  	  var renderGeneric = function(json, rootName, breadth){
         
         if(!breadth){var breadth = 20;}
         

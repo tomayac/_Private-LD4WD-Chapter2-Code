@@ -4,7 +4,7 @@
 
 var displayWaiting = function(progress, activity){
 	$('.waiting').remove();
-	
+	$('#movie').val('Loading and searching...').attr('disabled', 'disabled');
 	//var img = $('<img/>').attr({'src': 'img/ajax-loader.gif', 'alt': 'ajax loader', 'class': 'waiting'});
 	var progress = $('<progress />').attr({'max': '100', 'value': progress}).html(progress + '%');
 	var txt = $('<p />').html('<span>' + activity);
@@ -13,12 +13,20 @@ var displayWaiting = function(progress, activity){
 }
 var removeWaiting = function(){
 	$('.waiting').remove();
+	$('#movie').val('Finished! Want to try another time? :)').removeAttr('disabled');
+}
+var clearInterface = function(){
+	$('body>span').remove();
 }
 
 /****************************/
 /* Setup of event listening */
 /****************************/
 
+$('#movie').focus(function(){
+	//var initialValue = $(this).val();
+	$(this).val('');
+})
 $('body').bind('dataFetched', function(event, requestId){
 	console.warn('dataFetched signal catched! Woohoo, my results are ready for request #' + requestId);
 	mySemanticDealer.handleData(requestId);
@@ -33,8 +41,10 @@ $('body').bind('upToDate', function(event){
 	console.warn('Interface up-to-date');
 	removeWaiting();
 	mySemanticDealer.treeBuilder.computeSimpleTree();
-	var nbTracks = mySemanticDealer.treeBuilder.simpleTree.tracks.length;
-	var breadth = Math.floor(220/nbTracks);
+	
+	//var nbTracks = mySemanticDealer.treeBuilder.simpleTree.tracks.length;
+	//var breadth = Math.floor(270/nbTracks);
+	var breadth = 17;
 	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName, breadth);
 })
 
@@ -45,8 +55,17 @@ $('body').bind('upToDate', function(event){
 $('#stop').click(function(){
 	mySemanticDealer.dataFetcher.stop();
 });
-$('#complexTree').click(function(){
-	render(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
+$('#complexTree').live('click',function(){
+	clearInterface();	
+	renderGeneric(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName);
+	
+	$(this).attr('id', 'simpleTree').html('Simple Tree');
+});
+$('#simpleTree').live('click',function(){
+	clearInterface();	
+	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName);
+	
+	$(this).attr('id', 'complexTree').html('Complex Tree');
 });
 
 /****************************/
@@ -77,7 +96,7 @@ $('#movie').autocomplete({
 	select: function(event, ui) {
 	  //When a option of the list is selected
 		if (ui.item) {
-
+			clearInterface();
 	    var url = ui.item.value;
 	    var name = ui.item.label;
 		  console.log("You selected " + name);

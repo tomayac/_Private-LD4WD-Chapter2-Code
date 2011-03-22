@@ -52,6 +52,11 @@ form{
 	font-size: 0.9em;
 }
 progress{ margin: 7px;}
+body > span{
+	width: 1000px;
+	margin: auto !important; 
+	display: block !important; 
+}
 svg{
 	width: 960px;
   margin: auto;
