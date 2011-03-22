@@ -67,8 +67,38 @@ svg{
 	-moz-box-shadow: 0px 0px 7px #333; 
 	border: 1px #999 solid;
 	padding: 15px;
+	position: relative;
 }
-
+.artists{
+	width:290px;
+	height: 290px;
+	opacity: 0.8;
+	background-color: #333;
+	-moz-border-radius: 150px;
+	border-radius: 150px;
+	border: 1px #FF5E99 solid;
+	position: absolute;
+	top: 485px;
+	left: 295px;
+}
+.artists h1{
+	font-size: 24px;
+	color: white;
+	background: none;
+	width: 180px;
+	margin: auto;
+	padding: 24px 8px 8px 10px;
+}
+.artists p{
+	color: #666;
+	text-align: center;
+}
+.artists ul{
+	padding-left: 38px;
+	color: white;
+	padding-top: 8px;
+	list-style-type: none;
+}
 /* Style for the releases table */
 table{
 	width: 750px;

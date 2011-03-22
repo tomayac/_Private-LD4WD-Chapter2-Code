@@ -72,14 +72,14 @@
         
         //Black BG for our vinyl
         tree.node.add(pv.Dot)
-          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .visible(function(n) n.nodeName == "title")
           .radius(25)
           .fillStyle("black")
           .strokeStyle("white");
         
         //orange banner
         tree.node.add(pv.Dot)
-          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .visible(function(n) n.nodeName == "title")
           .radius(13)
           .fillStyle("orange")
           .strokeStyle("white");
@@ -87,29 +87,37 @@
         
         //black inside
         tree.node.add(pv.Dot)
-          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .visible(function(n) n.nodeName == "title")
           .radius(8)
           .fillStyle("black")
           .strokeStyle("white");
         
         //white center
         tree.node.add(pv.Dot)
-          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .visible(function(n) n.nodeName == "title")
           .radius(4)
           .fillStyle("white")
           .strokeStyle("black");
         
         //Active Dots, which triggers the AJAX request
         tree.node.add(pv.Dot)
-          .def("i", -1)
+          .def("hovered", -1)
+          .def("clicked", -1)
           .radius(function(n) n.firstChild ? '5' : '25')
           .cursor("pointer")
-          .visible(function(n) !n.firstChild && n.nodeName != "id" && n.nodeName != "duration")
+          .visible(function(n) n.nodeName == "title")
           .event("click", function(n){
-            var id = n.parentNode.firstChild.nodeValue;
+            this.clicked(this.index);
+            var id = n.parentNode.firstChild.nodeValue; //First Child of the parent node is the MusicBrainz ID
             console.log('Just clicked on ' + n.nodeValue);
             console.log('I guess you would like to see more about' + id + '...right?!');
-      			var urlToQuery = 'http://mm.musicbrainz.org/ws/1/track/' + id + '?type=xml&inc=artist+artist-rels';
+      			
+      			//Let's hide the div and put it in loading phase
+      			$('.artists').html('').fadeOut();
+			      var mydiv = $('<div />').addClass('artists').html('<p style="padding-top: 140px">loading...</p>');
+			      $('body>span').append(mydiv).hide().fadeIn();
+      			
+      			var urlToQuery = 'http://mm.musicbrainz.org/ws/1/track/' + id + '?type=xml&inc=artist';
 
       			var encodedUrl = encodeURIComponent(urlToQuery); //URLencoding is done before the parameter passing
           	var YQLQuery = 'select%20*%20from%20xml%20where%20url%3D%22' + encodedUrl + '%22';
@@ -120,27 +128,27 @@
         		  dataType: 'json',
         		  success: function(data) {
         			  console.log(data);
-        			  var relations = data.query.results.metadata.track['relation-list'].relation;
-        			  if(relations){
-        			    var credits = "";
-        			    for(var i=0; i<relations.length; i++){
-        			      console.log(relations);
-        			      credits += relations[i].type + ': ';
-        			      credits += relations[i].artist.name + ' -- ';
-        			    }
-        			    n.nodeValue = credits;
-      			    } else {
-      			      n.nodeValue = "YQL Error. Sorry."
-      			    }
+      			    try{
+      			      
+      			      //Try to get the artist's name
+    			        var artist = data.query.results.metadata.track.artist;
+    			        $('.artists').html('<h1>Artist: ' + artist.name + '</h1><p>Related Artists (credits to LastFM)</p><ul><li>Madonna</li><li>Bob Marley</li><li>Jet</li><li>Lily Wood and the Prick</li><li>The Rolling Stones</li></ul>');
+    			      } catch(e) {
+    			        //In case of error, let's blame YQL for it
+    			        $('.artists').html('YQL Error. Sorry.');
+    			        n.nodeValue = "YQL Error. Sorry."
+    			      }
+      			    
+        			  
         			  console.log('Just changed the nodeValue to ' + n.nodeValue);
         			  vis.render();
         		  }
         		});
           })
-          .fillStyle(function(n) this.i() == this.index ? "red" : "rgba(0, 0, 255, 0.01)")
-          .strokeStyle(function(n) this.i() == this.index ? "black" : "white")
-          .event("mouseover", function() this.i(this.index))
-          .event("mouseout", function() this.i(-1));
+          .fillStyle(function(n) this.clicked() == this.index ? "rgba(255,94,153,1)" : this.hovered() == this.index ? "rgba(255,94,153,0.75)" : "rgba(0, 0, 255, 0.01)")
+          .strokeStyle(function(n) this.hovered() == this.index ? "black" : "white")
+          .event("mouseover", function() this.hovered(this.index))
+          .event("mouseout", function() this.hovered(-1));
             
             
         tree.label.add(pv.Label)
